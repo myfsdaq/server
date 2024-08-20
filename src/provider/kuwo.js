@@ -61,37 +61,25 @@ const search = (info) => {
 
 const track = (id) => {
 	const url = crypto.kuwoapi
-		? 'http://bd-api.kuwo.cn/api/service/music/downloadInfo/'+ 
-		id + 
-		'?isMv=0&format=' +
-		['flac', 'mp3'].slice(select.ENABLE_FLAC ? 0 : 1)[0] + 
-		'&br=' +
-		['2000kflac', '320mp3'].slice(select.ENABLE_FLAC ? 0 : 1)[0] + 
-		'&uid=31757575&token=4b3aa228e4dec08a57de23425ae29f58'
-		/*'http://mobi.kuwo.cn/mobi.s?f=kuwo&q=' +
+		? //'http://38.47.103.166:9763/url/kw/' + id +'/' + ['flac', '320k'].slice(select.ENABLE_FLAC ? 0 : 1)[0]
+	
+		'http://mobi.kuwo.cn/mobi.s?f=kuwo&q=' +
 			crypto.kuwoapi.encryptQuery(
 				'corp=kuwo&source=kwplayer_ar_4.9.2.7_B_nuoweida_vh.apk&p2p=1&type=convert_url2&sig=0&format=' +
 					['flac', 'mp3']
-						.slice(select.ENABLE_FLAC ? 0 : 1)
-						.join('|') +
+						.slice(select.ENABLE_FLAC ? 0 : 1)[0]+
 					'&rid=' +
 					id
-			)*/
+			)
 		: 'http://antiserver.kuwo.cn/anti.s?type=convert_url&format=mp3&response=url&rid=MUSIC_' +
 			id; // flac refuse
 	// : 'http://www.kuwo.cn/url?format=mp3&response=url&type=convert_url3&br=320kmp3&rid=' + id // flac refuse
-
-	return request('GET', url, { 
-		'user-agent': 'Dart/2.18 (dart:io)' ,
-		'plat' : 'ar',
-		'channel' : 'guanfang',
-		'net' : 'wifi',
-		'ver' : '3.1.4',
-		'devId' : '14ae0d6545b9f830',
-		'host' : 'bd-api.kuwo.cn'})
+	
+	return request('GET', url, { 'user-agent': 'okhttp/3.10.0' })
 		.then((response) => response.body())
 		.then((body) => {
 			const url = (body.match(/http[^\s$"]+/) || [])[0];
+			console.log(url);
 			return url || Promise.reject();
 		})
 		.catch(() => insure().kuwo.track(id));
