@@ -4,6 +4,13 @@ const crypto = require('../crypto');
 const request = require('../request');
 const { getManagedCacheStorage } = require('../cache');
 
+const ip = "44." +
+			Math.floor(Math.random() * (10 - 255) + 255) +
+			"." +
+			Math.floor(Math.random() * (10 - 255) + 255) +
+			"." + 
+			Math.floor(Math.random() * (10 - 255) + 255);
+
 const format = (song) => ({
 	id: song.MUSICRID.split('_').pop(),
 	name: song.SONGNAME,
@@ -75,11 +82,11 @@ const track = (id) => {
 			id; // flac refuse
 	// : 'http://www.kuwo.cn/url?format=mp3&response=url&type=convert_url3&br=320kmp3&rid=' + id // flac refuse
 	
-	return request('GET', url, { 'user-agent': 'okhttp/3.10.0' })
+	return request('GET', url, { 'user-agent': 'okhttp/3.10.0' ,'X-Forward-For' : ip})
 		.then((response) => response.body())
 		.then((body) => {
+		
 			const url = (body.match(/http[^\s$"]+/) || [])[0];
-			console.log(url);
 			return url || Promise.reject();
 		})
 		.catch(() => insure().kuwo.track(id));
