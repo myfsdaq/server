@@ -4,12 +4,13 @@ const crypto = require('../crypto');
 const request = require('../request');
 const { getManagedCacheStorage } = require('../cache');
 
-const ip = "44." +
-			Math.floor(Math.random() * (10 - 255) + 255) +
-			"." +
-			Math.floor(Math.random() * (10 - 255) + 255) +
-			"." + 
-			Math.floor(Math.random() * (10 - 255) + 255);
+const ip =
+	'44.' +
+	Math.floor(Math.random() * (10 - 255) + 255) +
+	'.' +
+	Math.floor(Math.random() * (10 - 255) + 255) +
+	'.' +
+	Math.floor(Math.random() * (10 - 255) + 255);
 
 const format = (song) => ({
 	id: song.MUSICRID.split('_').pop(),
@@ -69,23 +70,24 @@ const search = (info) => {
 const track = (id) => {
 	const url = crypto.kuwoapi
 		? //'http://38.47.103.166:9763/url/kw/' + id +'/' + ['flac', '320k'].slice(select.ENABLE_FLAC ? 0 : 1)[0]
-	
-		'http://mobi.kuwo.cn/mobi.s?f=kuwo&q=' +
+
+			'http://mobi.kuwo.cn/mobi.s?f=kuwo&q=' +
 			crypto.kuwoapi.encryptQuery(
 				'corp=kuwo&source=kwplayer_ar_4.9.2.7_B_nuoweida_vh.apk&p2p=1&type=convert_url2&sig=0&format=' +
-					['flac', 'mp3']
-						.slice(select.ENABLE_FLAC ? 0 : 1)[0]+
+					['flac', 'mp3'].slice(select.ENABLE_FLAC ? 0 : 1)[0] +
 					'&rid=' +
 					id
 			)
 		: 'http://antiserver.kuwo.cn/anti.s?type=convert_url&format=mp3&response=url&rid=MUSIC_' +
 			id; // flac refuse
 	// : 'http://www.kuwo.cn/url?format=mp3&response=url&type=convert_url3&br=320kmp3&rid=' + id // flac refuse
-	
-	return request('GET', url, { 'user-agent': 'okhttp/3.10.0' ,'X-Forward-For' : ip})
+
+	return request('GET', url, {
+		'user-agent': 'okhttp/3.10.0',
+		'X-Forward-For': ip,
+	})
 		.then((response) => response.body())
 		.then((body) => {
-		
 			const url = (body.match(/http[^\s$"]+/) || [])[0];
 			return url || Promise.reject();
 		})
